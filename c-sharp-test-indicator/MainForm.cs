@@ -76,6 +76,7 @@ namespace Test
                 points[i] = new PointF(windowCenterX + x, windowCenterY - 12 + y);
             }
 
+            //Second numeric parameter in Pen() is line width
             Pen redPen = new Pen(Color.Red, 1);
             redPen.DashStyle = DashStyle.Custom;
             redPen.DashPattern = new float[] { pixelsToDrawLine, pixelsToDrawSpaceBetweenLines };
