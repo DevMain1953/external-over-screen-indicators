@@ -27,6 +27,7 @@ namespace Test
             timer.Start();
         }
 
+        //Changes window state based on hotkey state
         private void Timer_Tick(object? sender, EventArgs e)
         {
             short keyState = GetAsyncKeyState(VK_LSHIFT);
