@@ -10,7 +10,7 @@ namespace Test
         private const int VK_LSHIFT = 0xA0;
         private const int VK_Z = 0x5A;
 
-        public Notepad()
+        public Form1()
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.Sizable;
