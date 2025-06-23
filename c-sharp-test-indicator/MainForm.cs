@@ -1,4 +1,4 @@
-﻿using System.Drawing.Drawing2D;
+using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 
 namespace Test
@@ -8,8 +8,9 @@ namespace Test
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(int vKey);
         private const int VK_LSHIFT = 0xA0;
+        private const int VK_Z = 0x5A;
 
-        public Form1()
+        public Notepad()
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.Sizable;
@@ -17,6 +18,7 @@ namespace Test
             this.BackColor = Color.Magenta;
             this.TransparencyKey = Color.Magenta;
             this.ClientSize = new Size(700, 700);
+            this.WindowState = FormWindowState.Maximized;
             this.TopMost = true;
             this.DoubleBuffered = true;
             this.ShowInTaskbar = true;
@@ -27,11 +29,45 @@ namespace Test
             timer.Start();
         }
 
-        //Changes window state based on hotkey state
+        /// <summary>
+        /// Returns parameters with extended window styles, in this case
+        /// to make window not clickable and to prevent receiving focus from user
+        /// </summary>
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                // Window will have alpha channel and transparency
+                const int WS_EX_LAYERED = 0x00080000;
+
+                // Window won't receive clicks and focus from user
+                const int WS_EX_TRANSPARENT = 0x00000020;
+
+                // Window won't be active if user clicks on it
+                const int WS_EX_NOACTIVATE = 0x08000000;
+
+                CreateParams createParamsObject = base.CreateParams;
+                createParamsObject.ExStyle |= WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE;
+                return createParamsObject;
+            }
+        }
+
+        /// <summary>
+        /// Changes window state based on hotkey state
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            short keyState = GetAsyncKeyState(VK_LSHIFT);
-            if ((keyState & 0x8000) != 0)
+            short keyStateLeftShift = GetAsyncKeyState(VK_LSHIFT);
+            short keyStateZ = GetAsyncKeyState(VK_Z);
+
+            if ((keyStateLeftShift & 0x8000) != 0 && (keyStateZ & 0x8000) != 0)
+            {
+                Application.Exit();
+            }
+
+            if ((keyStateLeftShift & 0x8000) != 0)
             {
                 if (this.WindowState == FormWindowState.Maximized)
                 {
@@ -54,14 +90,14 @@ namespace Test
             Graphics graphics = e.Graphics;
             int windowCenterX = this.ClientSize.Width / 2;
             int windowCenterY = this.ClientSize.Height / 2;
-            
+
             //Change code in this fragment if needed
             int drawedEllipseHeight = 200;
             int drawedEllipseWidth = 585;
             float topScale = 2.15f;
             float bottomScale = 2.72f;
-            float pixelsToDrawLine = 7;
-            float pixelsToDrawSpaceBetweenLines = 50;
+            float pixelsToDrawLine = 20;
+            float pixelsToDrawSpaceBetweenLines = 1;
 
             //Draws not filled ellipse
             PointF[] points = new PointF[100];
@@ -78,7 +114,7 @@ namespace Test
             }
 
             //Second numeric parameter in Pen() is line width
-            Pen redPen = new Pen(Color.Red, 1);
+            Pen redPen = new Pen(Color.Red, 2);
             redPen.DashStyle = DashStyle.Custom;
             redPen.DashPattern = new float[] { pixelsToDrawLine, pixelsToDrawSpaceBetweenLines };
 
